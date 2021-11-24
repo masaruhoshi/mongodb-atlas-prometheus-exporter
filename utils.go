@@ -15,3 +15,12 @@ func DiffS(dt string) (time.Duration, error) {
 	diff := now.Sub(created)
 	return diff, nil
 }
+
+func InArray(a string, list []string) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+	return false
+}
