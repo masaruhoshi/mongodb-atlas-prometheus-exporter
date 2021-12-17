@@ -23,10 +23,10 @@ type GlobalFlags struct {
 	AtlasPublicKey   string `required:"true" name:"atlas.api-public-key" help:"Atlas API public key" env:"ATLAS_PUBLIC_KEY"`
 	AtlasPrivateKey  string `required:"true" name:"atlas.api-private-key" help:"Atlas API private key" env:"ATLAS_PRIVATE_KEY"`
 	AtlasProjectId   string `required:"true" name:"atlas.project" help:"Atlas project (group) id"`
-	WebListenAddress string `name:"web.listen-address" help:"Address to listen on for web interface and telemetry" default:":9139"`
+	WebListenAddress string `name:"web.listen-address" help:"Address to listen on for web interface and telemetry" default:":9717"`
 	WebScrapePath    string `name:"web.scrape-path" help:"API metrics path" default:"/scrape"`
 	WebTelemetryPath string `name:"web.telemetry-path" help:"Exporter metrics path" default:"/metrics"`
-	LogLevel         string `name:"log.level" help:"Only log messages with the given severuty or above. Valid levels: [debug, info, warn, error, fatal]" enum:"debug,info,warn,error,fatal" default:"error"`
+	LogLevel         string `name:"log.level" help:"Only log messages with the given severuty or above. Valid levels: [debug, info, warn, error]" enum:"debug,info,warn,error" default:"error"`
 	Version          bool   `name:"version" help:"Show version and exit"`
 }
 
@@ -92,9 +92,6 @@ func main() {
 	exitCode := 0
 	defer func() { os.Exit(exitCode) }()
 
-	promlogConfig := &promlog.Config{}
-	logger := promlog.New(promlogConfig)
-
 	var opts GlobalFlags
 	_ = kong.Parse(&opts,
 		kong.Name(prog),
@@ -113,6 +110,20 @@ func main() {
 		fmt.Printf("Build date: %s\n", version.BuildTime)
 
 		return
+	}
+
+	promlogConfig := &promlog.Config{}
+	logger := promlog.New(promlogConfig)
+
+	level.Error(logger).Log("logLevel", opts.LogLevel)
+	if opts.LogLevel == "debug" {
+		logger = level.NewFilter(logger, level.AllowDebug())
+	} else if opts.LogLevel == "info" {
+		logger = level.NewFilter(logger, level.AllowInfo())
+	} else if opts.LogLevel == "warn" {
+		logger = level.NewFilter(logger, level.AllowWarn())
+	} else {
+		logger = level.NewFilter(logger, level.AllowError())
 	}
 
 	atlasClient, err := getAtlasClient(opts, logger)

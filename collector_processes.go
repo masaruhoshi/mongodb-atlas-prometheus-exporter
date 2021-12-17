@@ -116,7 +116,7 @@ func (c *processesCollector) collectUptime(ch chan<- prometheus.Metric, client *
 	for _, process := range processes {
 		created, err := DiffS(process.Created)
 		if err != nil {
-			level.Error(c.logger).Log("msg", "Unable to convert created data", "err", err)
+			level.Warn(c.logger).Log("msg", "Unable to convert created data", "err", err)
 			exporterClientErrors.Inc()
 			continue
 		}
@@ -160,7 +160,7 @@ func (c *processesCollector) collectProcessMeasurements(ch chan<- prometheus.Met
 		}
 		for _, measurement := range measurements.Measurements {
 			if len(measurement.DataPoints) == 0 {
-				level.Error(c.logger).Log("msg", "No datapoint available for process", "hostname", process.Hostname, "measurement", measurement.Name)
+				level.Info(c.logger).Log("msg", "No datapoint available for process", "hostname", process.Hostname, "measurement", measurement.Name)
 				continue
 			}
 			datapoints := measurement.DataPoints
@@ -206,7 +206,7 @@ func (c *processesCollector) collectDatabaseMeasurements(ch chan<- prometheus.Me
 			for _, measurement := range dbmeasurements.Measurements {
 				if len(measurement.DataPoints) == 0 {
 					// No datapoints for this interval
-					level.Error(c.logger).Log("msg", "No datapoint available for database", "hostname", process.Hostname, "database", db, "measurement", measurement.Name)
+					level.Info(c.logger).Log("msg", "No datapoint available for database", "hostname", process.Hostname, "database", db, "measurement", measurement.Name)
 					continue
 				}
 				datapoints := measurement.DataPoints
@@ -254,7 +254,7 @@ func (c *processesCollector) collectDiskMeasurements(ch chan<- prometheus.Metric
 			for _, measurement := range measurements.Measurements {
 				if len(measurement.DataPoints) == 0 {
 					// No datapoints for this interval
-					level.Error(c.logger).Log("msg", "No datapoint available for disk", "hostname", process.Hostname, "disk", disk, "measurement", measurement.Name)
+					level.Info(c.logger).Log("msg", "No datapoint available for disk", "hostname", process.Hostname, "disk", disk, "measurement", measurement.Name)
 					continue
 				}
 				datapoints := measurement.DataPoints
