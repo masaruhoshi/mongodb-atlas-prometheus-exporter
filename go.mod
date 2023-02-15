@@ -6,7 +6,7 @@ require (
 	github.com/alecthomas/kong v0.2.18
 	github.com/go-kit/log v0.1.0
 	github.com/mongodb-forks/digest v1.0.3
-	github.com/prometheus/client_golang v1.11.0
+	github.com/prometheus/client_golang v1.11.1
 	github.com/prometheus/common v0.32.1
 	go.mongodb.org/atlas v0.13.0
 )
